@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <title>Site Musica</title>
+    <style>
+        body {
+            background-color: #6D6D6D;
+            color: white;
+        }
+
+        /* CARD DE MÚSICA */
+        .musica-card {
+            position: relative;
+            width: 100%;
+            border-radius: 18px;
+            overflow: hidden;
+            background-color: #373737;
+        }
+
+        .musica-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .musica-info {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: #373737;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 10px;
+        }
+
+        .musica-info .titulo {
+            font-weight: bold;
+            font-size: 15px;
+            margin: 0;
+        }
+
+        .musica-info .artista {
+            font-size: 12px;
+            color: #bfbfbf;
+            padding-left: 2px;
+        }
+
+        .musica-info .tempo {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /*  Genero  */
+        .genero-card {
+            position: relative;
+            width: 95%;
+            border-radius: 18px;
+            overflow: hidden;
+            background-color: #373737;
+        }
+
+        .genero-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .genero-label {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: #373737;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            font-size: 18px;
+            padding: 10px;
+        }
+
+        /* Fim Genero  */
+
+        /*  Artistas  */
+        .circulo {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .circulo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Fim Artistas  */
+
+        /*  Carousel  */
+        .carousel-inner {
+            padding: 0 100px;
+        }
+
+        .carousel-indicators {
+            position: static;
+            margin-top: 15px;
+        }
+
+        .carousel-indicators [data-bs-target] {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #bbb;
+            margin-top: 15px;
+        }
+
+        .carousel-indicators .active {
+            background-color: #000;
+        }
+
+        .carousel-item {
+            transition: opacity 0.6s ease-in-out;
+        }
+
+        /*  Fim Carousel  */
+
+        .audio-wrapper audio {
+            width: 220px;
+            height: 32px;
+            border: none;
+        }
+
+        audio::-webkit-media-controls-panel {
+            background-color: #6D6D6D;
+        }
+
+        /* Ícone Play/Pause */
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none;
+        }
+
+        .musica-card.playing .play-icon {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!--Inicio navbar -->
+    <nav class="navbar navbar-expand-lg py-2" style="background-color: #373737; height: 75px;">
+        <div class="d-flex flex-column align-items-center" style="position: absolute;left: 240px; top: 19px;">
+            <i class="fas fa-music text-light fs-4"></i>
+            <h1 class="text-white" style="font-size: 15px;">MUSIC</h1>
+        </div>
+
+        <div class="container d-flex align-items-center justify-content-between"> <!--Inicio container -->
+            <div></div>
+            <div class="d-flex align-items-center gap-5">
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item me-4">
+                        <a class="nav-link text-white d-flex align-items-center">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+
+                    <li class="nav-item me-4">
+                        <a class="nav-link text-white d-flex align-items-center">
+                            <i class="bi bi-music-note-list me-1"></i>Playlist
+                        </a>
+                    </li>
+
+                    <li class="nav-item me-4">
+                        <a class="nav-link text-white d-flex align-items-center">
+                            <i class="far fa-heart me-1"></i>Favoritos
+                        </a>
+                    </li>
+                </ul>
+
+                <form class="d-flex">
+                    <div class="input-group rounded-pill" style="background-color: #6D6D6D; width:355px; height:37px;">
+                        <span class="input-group-text bg-transparent border-0 text-white">
+                            <i class="fas fa-search me-1"></i>
+                        </span>
+
+                        <input class="form-control bg-transparent border-0 text-white"
+                            placeholder="o que voce quer ouvir agora?" style="color: white;">
+                    </div>
+                </form>
+            </div>
+        </div><!--Fim container -->
+    </nav> <!--Fim navbar -->
+
+    <!--Inicio Container Álbum do Mês e Populares-->
+    <div class="container-fluid mt-3 py-5">
+        <div class="row" style="padding-left:225px; padding-right:100px;">
+
+            <!-- Álbum do Mês -->
+            <div class="col-md-4 col-lg-3">
+                <div class="mb-4">
+                    <h1 class="fw-bold fs-3 mb-3">Álbum do Mês</h1>
+                </div>
+
+                <div class="album-container" style="background-color: #373737; border-radius: 38px; padding: 30px;">
+                    <div class="d-flex justify-content-center mb-4">
+                        <img src="imagens/destaque1.jpg" style="width: 190px; height: 200px; object-fit: cover;">
+                    </div>
+
+                    <div class="album-tracklist">
+                        <div class="d-flex justify-content-between align-items-center py-2">
+                            <span class="text-white">Musica 01</span>
+                            <span class="audio-wrapper">
+                                <audio controls>
+                                    <source src="metal/Metal.mp3">
+                                </audio>
+                            </span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center py-2 ">
+                            <span class="text-white">Musica 02</span>
+                            <span class="audio-wrapper">
+                                <audio controls>
+                                    <source src="metal/Metal2.mp3">
+                                </audio>
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center py-2">
+                            <span class="text-white">Musica 03</span>
+                            <span class="audio-wrapper">
+                                <audio controls>
+                                    <source src="metal/metal3.mp3">
+                                </audio>
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center py-2 ">
+                            <span class="text-white">Musica 04</span>
+                            <span class="audio-wrapper">
+                                <audio controls>
+                                    <source src="metal/metal4.mp3">
+                                </audio>
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center py-2 ">
+                            <span class="text-white">Musica 05</span>
+                            <span class="audio-wrapper">
+                                <audio controls>
+                                    <source src="metal/metal5.mp3">
+                                </audio>
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center py-2 ">
+                            <span class="text-white">Musica 06</span>
+                            <span class="audio-wrapper">
+                                <audio controls>
+                                    <source src="metal/metal6.mp3">
+                                </audio>
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center py-2">
+                            <span class="text-white">Musica 07</span>
+                            <span class="audio-wrapper">
+                                <audio controls>
+                                    <source src="metal/metal7.mp3">
+                                </audio>
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center py-2">
+                            <span class="text-white">Musica 08</span>
+                            <span class="audio-wrapper">
+                                <audio controls>
+                                    <source src="metal/metal8.mp3">
+                                </audio>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Populares da Semana -->
+            <div class="col-md-8">
+                <div class="mb-4">
+                    <h1 class="fw-bold fs-3 mb-3">Em alta</h1>
+                </div>
+
+                <!-- Primeira linha -->
+                <div class="row g-5 mb-3">
+                    <div class="col-3">
+                        <div class="musica-card position-relative" style="height: 307px; width: 240px;">
+                            <img src="imagens/destaque1.jpg" class="w-100 h-100" data-audio="metal1">
+                            <div class="musica-info d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="titulo">Ashes of Eden</div>
+                                    <div class="artista">Suno IA</div>
+                                </div>
+                                <div class="tempo">03:59</div>
+                            </div>
+                            <i class="far fa-heart heartIcon position-absolute"
+                                style="top: 10px; right: 10px; color: white; font-size: 24px; cursor: pointer;"></i>
+                            <span class="play-icon">▶️</span>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="musica-card position-relative" style="height: 307px; width: 240px;">
+                            <img src="imagens/destaque2.jpg" class="w-100 h-100" data-audio="rap">
+                            <div class="musica-info d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="titulo">Iron Vein</div>
+                                    <div class="artista">Suno IA</div>
+                                </div>
+                                <div class="tempo">01:51</div>
+                            </div>
+                            <i class="far fa-heart heartIcon position-absolute"
+                                style="top: 10px; right: 10px; color: white; font-size: 24px; cursor: pointer;"></i>
+                            <span class="play-icon">▶️</span>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="musica-card position-relative" style="height: 307px; width: 240px;">
+                            <img src="imagens/destaque3.jpg" class="w-100 h-100" data-audio="pagode">
+                            <div class="musica-info d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="titulo">Luz de Janeiro</div>
+                                    <div class="artista">Suno IA</div>
+                                </div>
+                                <div class="tempo">03:01</div>
+                            </div>
+                            <i class="far fa-heart heartIcon position-absolute"
+                                style="top: 10px; right: 10px; color: white; font-size: 24px; cursor: pointer;"></i>
+                            <span class="play-icon">▶️</span>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="musica-card position-relative" style="height: 307px; width: 240px;">
+                            <img src="imagens/destaque4.jpg" class="w-100 h-100" data-audio="metal2">
+                            <div class="musica-info d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="titulo">Glass Skin</div>
+                                    <div class="artista">Suno IA</div>
+                                </div>
+                                <div class="tempo">03:41</div>
+                            </div>
+                            <i class="far fa-heart heartIcon position-absolute"
+                                style="top: 10px; right: 10px; color: white; font-size: 24px; cursor: pointer;"></i>
+                            <span class="play-icon">▶️</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h1 class="fw-bold fs-3" style="margin-top: 34.5px; margin-bottom: 34.5px;">Populares da semana</h1>
+                </div>
+
+                <!-- Segunda linha -->
+                <div class="row g-5">
+                    <div class="col-3">
+                        <div class="musica-card position-relative" style="height: 307px; width: 240px;">
+                            <img src="imagens/popular1.jpg" class="w-100 h-100" data-audio="pagode1">
+                            <div class="musica-info d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="titulo">Mistura Certa</div>
+                                    <div class="artista">Suno IA</div>
+                                </div>
+                                <div class="tempo">03:01</div>
+                            </div>
+                            <i class="far fa-heart heartIcon position-absolute"
+                                style="top: 10px; right: 10px; color: white; font-size: 24px; cursor: pointer;"></i>
+                            <span class="play-icon">▶️</span>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="musica-card position-relative" style="height: 307px; width: 240px;">
+                            <img src="imagens/popular2.jpg" class="w-100 h-100" data-audio="rap2">
+                            <div class="musica-info d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="titulo">Riftborn</div>
+                                    <div class="artista">Suno IA</div>
+                                </div>
+                                <div class="tempo">02:49</div>
+                            </div>
+                            <i class="far fa-heart heartIcon position-absolute"
+                                style="top: 10px; right: 10px; color: white; font-size: 24px; cursor: pointer;"></i>
+                            <span class="play-icon">▶️</span>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="musica-card position-relative" style="height: 307px; width: 240px;">
+                            <img src="imagens/popular3.jpg" class="w-100 h-100" data-audio="metal3">
+                            <div class="musica-info d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="titulo">Stone Reign</div>
+                                    <div class="artista">Suno IA</div>
+                                </div>
+                                <div class="tempo">02:32</div>
+                            </div>
+                            <i class="far fa-heart heartIcon position-absolute"
+                                style="top: 10px; right: 10px; color: white; font-size: 24px; cursor: pointer;"></i>
+                            <span class="play-icon">▶️</span>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="musica-card position-relative" style="height: 307px; width: 240px;">
+                            <img src="imagens/popular4.jpg" class="w-100 h-100" data-audio="MPB">
+                            <div class="musica-info d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="titulo">Verso Livre</div>
+                                    <div class="artista">Suno IA</div>
+                                </div>
+                                <div class="tempo">03:01</div>
+                            </div>
+                            <i class="far fa-heart heartIcon position-absolute"
+                                style="top: 10px; right: 10px; color: white; font-size: 24px; cursor: pointer;"></i>
+                            onclick="changeHeart()"></i>
+                            <span class="play-icon">▶️</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!--Fim Container Álbum do Mês e Populares-->
+
+
+    <!--Inicio Container Recomendados -->
+    <div class="container-fluid mt-3 py-5">
+        <div class="mb-5" style="padding-left:225px;">
+            <h1 class="fw-bold fs-3 mb-3">Recomendados para você</h1>
+            <p class="fw-light fs-5">Baseado no seu histórico </p>
+        </div>
+
+        <div id="generoCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <!-- Slide 1 -->
+                <div class="carousel-item active">
+                    <div class="row g-4 justify-content-center">
+                        <div class="col-6 col-md-2">
+                            <div class="musica-card">
+                                <img src="imagens/destaque1.jpg" data-audio="metal1">
+                                <div class="musica-info d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="titulo">Ashes of Eden</div>
+                                        <div class="artista">Suno IA</div>
+                                    </div>
+                                    <div class="tempo">03:59</div>
+                                </div>
+                                <!-- Ícone Play/Pause -->
+                                <span class="play-icon">▶️</span>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-2">
+                            <div class="musica-card">
+                                <img src="imagens/destaque2.jpg" data-audio="rap">
+                                <div class="musica-info d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="titulo">Iron Vein</div>
+                                        <div class="artista">Suno IA</div>
+                                    </div>
+                                    <div class="tempo">01:51</div>
+                                </div>
+                                <!-- Ícone Play/Pause -->
+                                <span class="play-icon">▶️</span>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-2">
+                            <div class="musica-card">
+                                <img src="imagens/destaque3.jpg" data-audio="pagode">
+                                <div class="musica-info d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="titulo">Luz de Janeiro</div>
+                                        <div class="artista">Suno IA</div>
+                                    </div>
+                                    <div class="tempo">03:41</div>
+                                </div>
+                                <!-- Ícone Play/Pause -->
+                                <span class="play-icon">▶️</span>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-2">
+                            <div class="musica-card">
+                                <img src="imagens/destaque4.jpg" data-audio="metal2">
+                                <div class="musica-info d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="titulo">Glass Skin</div>
+                                        <div class="artista">Suno IA</div>
+                                    </div>
+                                    <div class="tempo">03:01</div>
+                                </div>
+                                <!-- Ícone Play/Pause -->
+                                <span class="play-icon">▶️</span>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-2">
+                            <div class="musica-card">
+                                <img src="imagens/destaque5.jpg" data-audio="rap2">
+                                <div class="musica-info d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="titulo">Soul Syntax</div>
+                                        <div class="artista">Suno IA</div>
+                                    </div>
+                                    <div class="tempo">03:01</div>
+                                </div>
+                                <!-- Ícone Play/Pause -->
+                                <span class="play-icon">▶️</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- parte 2 -->
+                <div class="carousel-item">
+                    <div class="row g-4 justify-content-center">
+
+                        <div class="col-6 col-md-2">
+                            <div class="musica-card">
+                                <img src="imagens/destaque6.jpg" data-audio="metal3">
+                                <div class="musica-info d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="titulo">Stone Reign</div>
+                                        <div class="artista">Suno IA</div>
+                                    </div>
+                                    <div class="tempo">02:32</div>
+                                </div>
+                                <!-- Ícone Play/Pause -->
+                                <span class="play-icon">▶️</span>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-2">
+                            <div class="musica-card">
+                                <img src="imagens/destaque7.jpg" data-audio="pagode1">
+                                <div class="musica-info d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="titulo">Raiz Serena</div>
+                                        <div class="artista">Suno IA</div>
+                                    </div>
+                                    <div class="tempo">01:51</div>
+                                </div>
+                                <!-- Ícone Play/Pause -->
+                                <span class="play-icon">▶️</span>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-2">
+                            <div class="musica-card">
+                                <img src="imagens/destaque8.jpg" data-audio="musica2">
+                                <div class="musica-info d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="titulo">Golden Leaves</div>
+                                        <div class="artista">Suno IA</div>
+                                    </div>
+                                    <div class="tempo">02:48</div>
+                                </div>
+                                <!-- Ícone Play/Pause -->
+                                <span class="play-icon">▶️</span>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-2">
+                            <div class="musica-card">
+                                <img src="imagens/destaque9.jpg" data-audio="MPB">
+                                <div class="musica-info d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="titulo">Verso Leve</div>
+                                        <div class="artista">Suno IA</div>
+                                    </div>
+                                    <div class="tempo">02:41</div>
+                                </div>
+                                <!-- Ícone Play/Pause -->
+                                <span class="play-icon">▶️</span>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-2">
+                            <div class="musica-card">
+                                <img src="imagens/destaque10.jpg" data-audio="metal4">
+                                <div class="musica-info d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="titulo">Stone Howl</div>
+                                        <div class="artista">Suno IA</div>
+                                    </div>
+                                    <div class="tempo">03:21</div>
+                                </div>
+                                <!-- Ícone Play/Pause -->
+                                <span class="play-icon">▶️</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Indicadores (bolinhas embaixo) -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#generoCarousel" data-bs-slide-to="0" class="active"
+                    aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#generoCarousel" data-bs-slide-to="1"
+                    aria-label="Slide 2"></button>
+            </div>
+
+        </div>
+    </div><!--Fim Container Recomandados -->
+
+
+    <!--Inicio Container Generos -->
+    <div class="container-fluid mt-3 py-5">
+        <div class="mb-5" style="padding-left:225px;">
+            <h1 class="fw-bold fs-3 mb-3">Generos Populares</h1>
+            <p class="fw-light fs-5">Os generos mais tocados</p>
+        </div>
+
+        <div class="row g-4" style="padding-left:225px; padding-right:225px; ">
+            <div class="col-6 col-md-3">
+                <div class="genero-card">
+                    <img src="imagens/Pagode.jpg">
+                    <div class="genero-label">PAGODE</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="genero-card">
+                    <img src="imagens/Rock.jpg">
+                    <div class="genero-label">ROCK</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="genero-card">
+                    <img src="imagens/Eletronica.jpg">
+                    <div class="genero-label">ELETRÔNICA</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="genero-card">
+                    <img src="imagens/Funk.jpg">
+                    <div class="genero-label">FUNK</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="genero-card">
+                    <img src="imagens/Sertanejo.jpg">
+                    <div class="genero-label">SERTANEJO</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="genero-card">
+                    <img src="imagens/MPB.jpg">
+                    <div class="genero-label">MPB</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="genero-card">
+                    <img src="imagens/Jazz.jpeg" style="width: 330px; height: 323px;">
+                    <div class="genero-label">JAZZ</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="genero-card">
+                    <img src="imagens/Reggae.jpg">
+                    <div class="genero-label">REGGAE</div>
+                </div>
+            </div>
+            <hr style="color: black; margin-top: 80px ;">
+        </div>
+    </div><!--Fim Container Generos -->
+
+    <!--Inicio Container Cantores Famosos-->
+    <div class="container-fluid mt-3 py-5">
+        <div class="mb-5" style="padding-left:225px;">
+            <h1 class="fw-bold fs-3 mb-3">Artistas Populares</h1>
+            <p class="fw-light fs-5">Os artistas mais tocados</p>
+        </div>
+
+        <div class="d-flex gap-5 justify-content-center">
+            <div class="circulo">
+                <img src="imagens/artista1.jpg">
+            </div>
+            <div class="circulo">
+                <img src="imagens/Artista2.jpg">
+            </div>
+            <div class="circulo">
+                <img src="imagens/Artista3.jpg">
+            </div>
+            <div class="circulo">
+                <img src="imagens/Artista4.jpg">
+            </div>
+            <div class="circulo">
+                <img src="imagens/Artista5.jpg">
+            </div>
+
+        </div>
+    </div> <!--Fim Container Cantores Famosos-->
+
+
+    <!--Musicas-->
+
+
+    <!--Musicas -->
+    <audio id="metal1" src="metal/Metal.mp3"></audio>
+    <audio id="metal2" src="metal/Metal2.mp3"></audio>
+    <audio id="metal3" src="metal/metal3.mp3"></audio>
+    <audio id="metal4" src="metal/metal4.mp3"></audio>
+    <audio id="metal5" src="metal/metal5.mp3"></audio>
+    <audio id="metal6" src="metal/metal6.mp3"></audio>
+    <audio id="rap" src="sons/RAP.mp3"></audio>
+    <audio id="rap2" src="sons/RAP2.mp3"></audio>
+    <audio id="MPB" src="sons/MPB.mp3"></audio>
+    <audio id="pagode" src="sons/pagode.mp3"></audio>
+    <audio id="pagode1" src="sons/pagode1.mp3"></audio>
+
+
+
+    <!-- Scripts do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script>
+        const cards = document.querySelectorAll('.musica-card img');
+        let currentAudio = null;
+        let currentCard = null;
+
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const audioId = card.getAttribute('data-audio');
+                const audio = document.getElementById(audioId);
+                const cardWrapper = card.closest('.musica-card');
+                const icon = cardWrapper.querySelector('.play-icon');
+
+                // Se clicou no mesmo → pausa
+                if (currentAudio === audio) {
+                    audio.pause();
+                    cardWrapper.classList.remove('playing');
+                    icon.textContent = "▶️";
+                    currentAudio = null;
+                    currentCard = null;
+                    return;
+                }
+
+                // Pausa o anterior
+                if (currentAudio) {
+                    currentAudio.pause();
+                    if (currentCard) {
+                        currentCard.classList.remove('playing');
+                        currentCard.querySelector('.play-icon').textContent = "▶️";
+                    }
+                }
+
+                // Toca o novo
+                audio.currentTime = 0;
+                audio.play();
+                cardWrapper.classList.add('playing');
+                icon.textContent = "⏸️";
+
+                currentAudio = audio;
+                currentCard = cardWrapper;
+            });
+        });
+
+
+
+
+        // Seleciona todos os corações
+        const hearts = document.querySelectorAll(".heartIcon");
+
+        hearts.forEach(heart => {
+            heart.addEventListener("click", () => {
+                if (heart.classList.contains("far")) {
+                    heart.classList.remove("far");
+                    heart.classList.add("fas");
+                    heart.style.color = "red";
+                } else {
+                    heart.classList.remove("fas");
+                    heart.classList.add("far");
+                    heart.style.color = "white";
+                }
+            });
+        });
+
+    </script>
+
+
+</body>
+
+</html>
